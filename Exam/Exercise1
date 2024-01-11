@@ -1,1 +1,56 @@
-Import
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String date;
+
+        System.out.print("Enter a Date by YYYY-MM-DD: ");
+        date = scanner.next();
+
+        String[] DateArray = date.split("-");
+
+        switch(DateArray[1]) {
+            case "01":
+                DateArray[1]="January";
+                break;
+            case "02":
+                DateArray[1]="February";
+                break;
+            case "03":
+                DateArray[1]="March";
+                break;
+            case "04":
+                DateArray[1]="April";
+                break;
+            case "05":
+                DateArray[1]="May";
+                break;
+            case "06":
+                DateArray[1]="June";
+                break;
+            case "07":
+                DateArray[1]="July";
+                break;
+            case "08":
+                DateArray[1]="August";
+                break;
+            case "09":
+                DateArray[1]="September";
+                break;
+            case "10":
+                DateArray[1]="October";
+                break;
+            case "11":
+                DateArray[1]="November";
+                break;
+            case "12":
+                DateArray[1]="December";
+                break;
+            default:
+                System.out.println("Invalid Month");
+        }
+        System.out.println("Full Date : " + DateArray[1]+" "+DateArray[2]+","+DateArray[0]);
+
+    }
+}
