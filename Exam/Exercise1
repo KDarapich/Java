@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Main {
+public class ConvertDate {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String date;
@@ -49,8 +49,14 @@ public class Main {
                 break;
             default:
                 System.out.println("Invalid Month");
+                DateArray[1]=null;
+
         }
-        System.out.println("Full Date : " + DateArray[1]+" "+DateArray[2]+","+DateArray[0]);
+        if (DateArray[1]== null){
+            System.out.println(" ");
+        }else{
+            System.out.println("Full Date : " + DateArray[1]+" "+DateArray[2]+","+DateArray[0]);
+        }
 
     }
 }
