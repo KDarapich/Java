@@ -89,7 +89,7 @@ class Sale {
     }
 }
 
-public class Main {
+public class Exercise2{
     public static void main(String[] args) {
         Customer c1 = new Customer("Sovisal");
         Customer c2 = new Customer("Sokchea");
