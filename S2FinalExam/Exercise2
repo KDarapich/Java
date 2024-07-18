@@ -1,0 +1,165 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class CustomerViewer extends JFrame implements ActionListener {
+    private final JTextField idField;
+    private final JTextField lastNameField;
+    private final JTextField firstNameField;
+    private final JTextField phoneField;
+    private final JButton prevButton;
+    private final JButton nextButton;
+
+    private int currentIndex = 0;
+    private final ArrayList<CustomerInfo> customerInfos;
+
+    public CustomerViewer() {
+        setTitle("Customer");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new GridLayout(5, 2, 5, 5));
+
+        JLabel idLabel=new JLabel("ID:");
+        JLabel lastNameLabel=new JLabel("Last Name:");
+        JLabel firstNameLabel=new JLabel("First Name:");
+        JLabel phoneLabel=new JLabel("Phone:");
+
+        idField = new JTextField();
+        lastNameField = new JTextField();
+        firstNameField = new JTextField();
+        phoneField = new JTextField();
+
+        idField.setEditable(false);
+        lastNameField.setEditable(false);
+        firstNameField.setEditable(false);
+        phoneField.setEditable(false);
+
+        panel.add(idLabel);
+        panel.add(idField);
+        panel.add(lastNameLabel);
+        panel.add(lastNameField);
+        panel.add(firstNameLabel);
+        panel.add(firstNameField);
+        panel.add(phoneLabel);
+        panel.add(phoneField);
+
+        prevButton = new JButton("Previous");
+        nextButton = new JButton("Next");
+
+        prevButton.addActionListener(this);
+        nextButton.addActionListener(this);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(prevButton);
+        buttonPanel.add(nextButton);
+
+        add(panel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        customerInfos= fetchCustomers();
+
+        if (!customerInfos.isEmpty()) {
+            displayCustomer(currentIndex);
+        }
+    }
+
+    private ArrayList<CustomerInfo> fetchCustomers() {
+        ArrayList<CustomerInfo> customerInfos= new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:Mysql://localhost:3306/customer_db", "root", "Pich088");
+            String query = "SELECT customer_id, customer_last_name, customer_first_name, customer_phone FROM customer";
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("customer_id");
+                String lastName = resultSet.getString("customer_last_name");
+                String firstName = resultSet.getString("customer_first_name");
+                String phone = resultSet.getString("customer_phone");
+                customerInfos.add(new CustomerInfo(id, lastName, firstName, phone));
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return customerInfos;
+    }
+
+    private void displayCustomer(int index) {
+        CustomerInfo customerInfo= customerInfos.get(index);
+        idField.setText(String.valueOf(customerInfo.getId()));
+        lastNameField.setText(customerInfo.getLastName());
+        firstNameField.setText(customerInfo.getFirstName());
+        phoneField.setText(customerInfo.getPhone());
+
+        prevButton.setEnabled(index > 0);
+        nextButton.setEnabled(index < customerInfos.size() - 1);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == prevButton) {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayCustomer(currentIndex);
+            }
+        } else if (e.getSource() == nextButton) {
+            if (currentIndex < customerInfos.size() - 1) {
+                currentIndex++;
+                displayCustomer(currentIndex);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CustomerViewer viewer = new CustomerViewer();
+            viewer.setVisible(true);
+        });
+    }
+}
+
+class CustomerInfo {
+    private final int id;
+    private final String lastName;
+    private final String firstName;
+    private final String phone;
+
+    public CustomerInfo(int id, String lastName, String firstName, String phone) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.phone = phone;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+}
